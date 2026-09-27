@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Jupyter Notebooks for STEM Education</title>
+
+<!--
+  ============================================================
+  HOW TO EDIT THIS PAGE  (a primer for beginners)
+  ============================================================
+  This file is plain HTML, CSS, and a little JavaScript. There
+  is no build step, no installation, no command line needed.
+  Open this file in any text editor (Notepad, TextEdit, VS Code,
+  even Google Docs saved as plain text), make a change, save the
+  file, then open it (or refresh it) in a web browser to see the
+  result.
+
+  THE THREE LANGUAGES IN THIS FILE
+  ---------------------------------
+  - HTML (HyperText Markup Language): the text between <body> and
+    </body> further down. It describes the CONTENT and STRUCTURE
+    of the page: headings, paragraphs, images, buttons, lists.
+    HTML is made of "tags" that usually come in pairs, an opening
+    tag and a closing tag, wrapped around content:
+        <h2>This is a heading</h2>
+        <p>This is a paragraph of text.</p>
+    The closing tag is the same as the opening tag but with a
+    forward slash: </h2>, </p>, </div>, and so on. Whatever is
+    between the opening and closing tag is what shows on the page.
+    Some tags do not wrap around anything and do not need a
+    closing tag, such as <img ... /> (an image) or <br /> (a line
+    break).
+
+  - CSS (Cascading Style Sheets): the text between <style> and
+    </style> near the top of this file. It describes how things
+    LOOK: colors, spacing, fonts, sizes. CSS does not add or
+    remove content, it only changes appearance.
+
+  - JavaScript: the small script between <script> and </script>
+    near the bottom. It adds INTERACTIVITY, in this file it is
+    only used to make the "field" filter buttons above the
+    notebook list show and hide the matching notebooks when
+    clicked. You do not need to understand it to edit the content
+    of the page.
+
+  READING AN HTML TAG
+  ---------------------
+  A tag can carry "attributes", which are extra bits of
+  information written inside the opening tag, like this:
+        <a href="https://example.com" class="button">Click me</a>
+  Here, "a" is the tag name (a link), href="..." tells the
+  browser where the link goes, and class="button" tells the
+  browser which CSS style to apply (see "WHAT IS A CLASS" below).
+  "Click me" is the visible link text, and </a> closes the tag.
+
+  WHAT IS A "CLASS"?
+  --------------------
+  Almost every element in this file has a class="..." attribute,
+  for example class="button" or class="notebook-card". A class is
+  just a label. Up in the <style> block, a rule like:
+        .button { background: red; }
+  means "anything with class='button' gets a red background."
+  The dot (.) in front of a name in CSS means "this is a class
+  name". Two elements can share the same class and will look the
+  same. You do not need to touch the CSS to reuse an existing
+  look, just reuse the same class name on a new element (this is
+  exactly how the "copy this block" instructions further down in
+  this file work).
+
+  WHAT IS A COMMENT?
+  ---------------------
+  Comments are notes for humans that the browser ignores; they
+  never show up on the page. This entire block you are reading is
+  one big HTML comment. An HTML comment starts with a less-than
+  sign, an exclamation point, and two hyphens, and ends with two
+  hyphens and a greater-than sign, wrapped around the note.
+  CSS comments (inside the <style> block) use a different pattern:
+  a forward slash and asterisk to start, and an asterisk and
+  forward slash to end.
+  You will see both kinds used throughout this file to explain
+  what different parts do. Feel free to add your own comments as
+  notes to yourself, just be careful never to type two hyphens
+  followed by a greater-than sign inside an HTML comment's text,
+  even as an example, since that combination ends the comment
+  early no matter where it appears, which is exactly the mistake
+  that was fixed here.
+
+  SAFE WAY TO EXPERIMENT
+  -------------------------
+  Before making changes, make a backup copy of this file (for
+  example "jupyter-stem-backup.html"). If something breaks, or
+  the page stops working correctly after an edit, the most common
+  cause is a missing or mismatched tag, such as forgetting a
+  closing </div>. Compare your change against a copy of the
+  original file, or undo the change, and try again.
+
+  QUICK JUMP LIST
+  ------------------
+  Search (Ctrl/Cmd+F) for the marker text in quotes below to jump
+  straight to that part of the file:
+
+  1. "ADD A NOTEBOOK"        - add or edit a notebook card
+  2. "ADD A NOTEBOOK FIELD"  - add a whole new field/category
+  3. "ADD A TEAM MEMBER"     - add or edit a team bio card
+  4. "ADD A NEW SECTION"     - add a brand new page section
+  5. "SIDEBAR MENU"          - keep the sidebar links in sync
+  6. "COLOR AND FONT SETTINGS" - change the color palette or fonts
+     for the entire page in one place
+
+  Colors, fonts, and spacing mostly live at the top of the
+  <style> block inside a section marked :root { ... }. Change a
+  value there once and it updates everywhere on the page that
+  uses it (this is explained in detail at "COLOR AND FONT
+  SETTINGS" below).
+  ============================================================
+-->
+
+
+<!--
+  The four lines below load things from outside this file:
+  - The two "preconnect" lines and the "fonts.googleapis.com"
+    line load the two fonts used on this page (Roboto Slab for
+    headings, Source Sans Pro for body text) from Google Fonts.
+  - The "cdnjs.cloudflare.com" line loads Font Awesome, an icon
+    library. Every small icon on this page, like the envelope,
+    GitHub logo, or magnifying glass, comes from this library.
+    Icons are added using tags like <i class="fa-solid fa-envelope"></i>.
+    Browse fontawesome.com/icons to find other icon names, and
+    swap the class="fa-solid fa-envelope" part for a new icon's
+    class name to change which icon shows.
+  Leave these four lines alone unless you specifically want to
+  change fonts or the icon set.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  /*
+    ==============================================================
+    COLOR AND FONT SETTINGS
+    ==============================================================
+    Everything in this :root { ... } block is a "CSS variable": a
+    named value you can reuse anywhere else in the styles below,
+    written as var(--name-here). Changing a color or font ONCE
+    here updates it everywhere on the page that uses that
+    variable, instead of you having to hunt down every place a
+    color appears.
+
+    To change a color, replace the six-digit code after the
+    colon (a "hex code", like #d4572a) with a different one.
+    You can pick colors visually at a site like
+    https://htmlcolorcodes.com and copy the hex code it gives you.
+
+    What each variable controls:
+      --bg              main page background color
+      --bg-alt          slightly shaded background, used behind
+                         badges, icons, and info boxes
+      --sidebar-bg      background color of the dark sidebar
+                         on the right (or bottom, on narrow
+                         screens)
+      --sidebar-fg      main text color inside the sidebar
+      --sidebar-fg-dim  dimmer, secondary text color inside the
+                         sidebar (subtitles, counts, footer text)
+      --text            main body text color
+      --heading         color used for all headings (h1, h2, h3, h4)
+      --accent          the highlight color used for buttons,
+                         links, and active states, change this
+                         one value to re-theme the whole page to
+                         a different accent color
+      --accent-dark     a darker shade of --accent, shown when
+                         you hover your mouse over a button
+      --card-bg         background color of notebook cards and
+                         team member cards
+      --card-border     the thin border/divider line color used
+                         around cards and between sections
+      --chip-mech       color used to label Mechanical Engineering
+                         items (tags and the small dot)
+      --chip-chem       color used to label Chemistry items
+      --chip-mat        color used to label Materials Science items
+      --font-head       the font used for all headings, currently
+                         "Roboto Slab" (a serif font)
+      --font-body       the font used for regular paragraph text,
+                         currently "Source Sans Pro"
+
+    To change a font, replace the text in quotes with a font name
+    from https://fonts.google.com, then also update the font name
+    in the <link href="https://fonts.googleapis.com/css2?family=..."
+    line above so the browser actually loads it.
+  */
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f4f4f6;
+    --sidebar-bg: #2b2f3a;
+    --sidebar-fg: #cfd3dc;
+    --sidebar-fg-dim: #9a9fac;
+    --text: #3a3d44;
+    --heading: #23262d;
+    --accent: #d4572a;
+    --accent-dark: #b8461f;
+    --card-bg: #ffffff;
+    --card-border: #e7e7ea;
+    --chip-mech: #3b6ea5;
+    --chip-chem: #4e8f5e;
+    --chip-mat: #9b5bb0;
+    --font-head: 'Roboto Slab', serif;
+    --font-body: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  /*
+    DARK MODE
+    ---------
+    The two blocks below redefine the same variable names with
+    different (darker) colors. The first block applies
+    automatically when a visitor's device is set to dark mode.
+    The second block applies if this page is ever given a
+    data-theme="dark" attribute by other code. You do not need to
+    understand these mechanics to use the page, just know that if
+    you change a color above and it does not seem to "stick", it
+    is worth checking whether the same variable is also being
+    overridden down here for dark mode.
+  */
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #1b1c20;
+      --bg-alt: #232429;
+      --sidebar-bg: #17181c;
+      --sidebar-fg: #c7cad2;
+      --sidebar-fg-dim: #838791;
+      --text: #d4d6db;
+      --heading: #f2f3f5;
+      --card-bg: #232429;
+      --card-border: #34363d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1b1c20;
+    --bg-alt: #232429;
+    --sidebar-bg: #17181c;
+    --sidebar-fg: #c7cad2;
+    --sidebar-fg-dim: #838791;
+    --text: #d4d6db;
+    --heading: #f2f3f5;
+    --card-bg: #232429;
+    --card-border: #34363d;
+  }
+
+  /*
+    ==============================================================
+    BASE / RESET STYLES
+    ==============================================================
+    These rules set defaults for the whole page before any of the
+    more specific styles further down apply.
+      * { box-sizing: border-box; }   makes width/height math more
+                                       predictable for every element
+      html, body { height: 100%; }    lets the page fill the full
+                                       browser window height
+      body { ... }                    sets the default background
+                                       color, text color, font, and
+                                       line spacing for the whole page
+      h1, h2, h3, h4 { ... }          makes every heading use the
+                                       heading font and color
+      a { ... }                       styles every link (default
+                                       color, no underline until
+                                       you hover over it)
+      p { ... }                       adds space below every
+                                       paragraph
+      img { ... }                     stops images from overflowing
+                                       their container
+  */
+  * { box-sizing: border-box; }
+  html {
+    scroll-padding-top: env(safe-area-inset-top, 0px);
+    scroll-behavior: smooth;
+  }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  h1, h2, h3, h4 { font-family: var(--font-head); color: var(--heading); line-height: 1.25; margin: 0 0 0.5em; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 0 0 1em; }
+  img { max-width: 100%; display: block; }
+
+  /*
+    ==============================================================
+    PAGE LAYOUT (two columns: main content + sidebar)
+    ==============================================================
+    .wrapper is the outer container that holds both the main
+    content column (id="main") and the sidebar (id="sidebar").
+    On narrow screens (phones), flex-direction: column stacks
+    them on top of each other. The @media rule below only applies
+    on screens 981px wide or more (typical laptop/desktop), where
+    it switches to a side-by-side layout and makes the sidebar
+    "stick" in place while you scroll the main content.
+    If you want the breakpoint (the screen width where the layout
+    switches) to be different, change the 981px number in both
+    this @media rule and the matching one near the bottom of the
+    CSS ("max-width: 980px").
+  */
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 981px) {
+    .wrapper { flex-direction: row; align-items: flex-start; }
+    #main { flex: 1 1 auto; min-width: 0; }
+    #sidebar {
+      flex: 0 0 320px;
+      position: sticky;
+      top: env(safe-area-inset-top, 0px);
+      align-self: flex-start;
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+  }
+
+  #main .inner { padding: 2.5em 2em 4em; }
+
+  /*
+    ==============================================================
+    TOP HEADER BAR  (logo + social icons)
+    ==============================================================
+    Controls the strip at the very top of the main column that
+    holds the "NotebookLab" logo text on the left and the row of
+    social icons on the right.
+  */
+  header#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1em;
+    padding-bottom: 1.5em;
+    margin-bottom: 2em;
+    border-bottom: 2px solid var(--card-border);
+  }
+  header#header .logo {
+    font-family: var(--font-head);
+    font-size: 1.3em;
+    color: var(--heading);
+  }
+  header#header .logo strong { color: var(--accent); }
+  header#header .logo:hover { text-decoration: none; }
+  .icons { list-style: none; display: flex; gap: 0.9em; margin: 0; padding: 0; }
+  .icons a { color: var(--text); font-size: 1.1em; }
+  .icons a:hover { color: var(--accent); }
+
+  /*
+    ==============================================================
+    BANNER  (the big "Learning STEM, one cell at a time" section)
+    ==============================================================
+    This is the large introduction area near the top of the page,
+    with the heading, the paragraph of lead text, the three small
+    pill-shaped badges, the two buttons, and the notebook
+    illustration on the right.
+  */
+  #banner {
+    display: flex;
+    align-items: center;
+    gap: 2em;
+    flex-wrap: wrap;
+    padding: 2.5em 0 3em;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 3em;
+  }
+  #banner .content { flex: 1 1 380px; }
+  #banner h1 { font-size: 2.3em; }
+  #banner .lead { font-size: 1.15em; color: var(--text); }
+  #banner .badge-row { display: flex; flex-wrap: wrap; gap: 0.6em; margin-top: 1.3em; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    background: var(--bg-alt);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 0.35em 0.9em;
+    font-size: 0.85em;
+    color: var(--text);
+  }
+  #banner .art {
+    flex: 1 1 260px;
+    display: flex;
+    justify-content: center;
+  }
+  .notebook-icon-wrap {
+    width: 220px;
+    height: 220px;
+  }
+
+  /*
+    ==============================================================
+    BUTTONS
+    ==============================================================
+    .button is the reusable style for any clickable button-looking
+    link on the page, such as "Browse notebooks" and "Open" links
+    on notebook cards. .button.alt is a lighter, outlined variant
+    (used for "Meet the team"). To make your own button match, add
+    class="button" (or class="button alt") to any <a> link.
+  */
+  .actions { list-style: none; display: flex; gap: 0.8em; padding: 0; margin: 1.5em 0 0; flex-wrap: wrap; }
+  .button {
+    display: inline-block;
+    padding: 0.7em 1.5em;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.95em;
+    border: none;
+    cursor: pointer;
+  }
+  .button:hover { background: var(--accent-dark); text-decoration: none; }
+  .button.alt {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .button.alt:hover { background: var(--accent); color: #fff; }
+
+  /*
+    ==============================================================
+    SECTION HEADERS (used by every major section on the page)
+    ==============================================================
+    Any <section class="block"> automatically gets spacing below
+    it, and a <header class="major"> inside it (holding an <h2>
+    title and an optional <p class="sub"> subtitle) gets a
+    dividing line underneath. This is what gives "Why notebooks
+    for STEM", "Notebook library", and "Our team" their matching
+    look, so a new section using the same class names will match
+    automatically. See "ADD A NEW SECTION" further down in the
+    HTML for a ready-to-copy template.
+  */
+  section.block { margin-bottom: 3.5em; }
+  section.block > header.major { margin-bottom: 1.6em; border-bottom: 2px solid var(--card-border); padding-bottom: 0.6em; }
+  section.block > header.major h2 { font-size: 1.6em; }
+  section.block > header.major p.sub { color: var(--sidebar-fg-dim); margin-top: 0.3em; font-size: 0.95em; }
+
+  /*
+    ==============================================================
+    FEATURE GRID  (the 4 boxes under "Why notebooks for STEM":
+    "Learn by doing", "Theory next to code", etc.)
+    ==============================================================
+    .features arranges its .content boxes in a responsive grid
+    that automatically wraps to fewer columns on narrow screens.
+  */
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.6em; }
+  .features article { display: flex; gap: 1em; }
+  .features .icon {
+    flex: 0 0 auto;
+    width: 46px; height: 46px;
+    border-radius: 10px;
+    background: var(--bg-alt);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2em;
+  }
+  .features h3 { font-size: 1.05em; margin-bottom: 0.3em; }
+  .features p { font-size: 0.93em; color: var(--text); margin: 0; }
+
+  /*
+    ==============================================================
+    NOTEBOOK LIBRARY: filter tabs, field groups, and cards
+    ==============================================================
+    These rules style the "All fields / Mechanical Engineering /
+    Chemistry / Materials Science" filter buttons, the heading and
+    colored dot above each field's group of notebooks, and each
+    individual notebook card (title, tags, description, footer
+    link). For instructions on adding new notebooks or fields,
+    search this file for "ADD A NOTEBOOK" and "ADD A NOTEBOOK
+    FIELD" (further down, in the HTML part of the file).
+  */
+  /* Field filter tabs */
+  .field-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6em;
+    margin-bottom: 1.8em;
+  }
+  .field-tab {
+    padding: 0.55em 1.1em;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: var(--bg-alt);
+    color: var(--text);
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .field-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .field-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+  /*
+    .notebook-group.hidden is the rule the JavaScript at the
+    bottom of this file switches on and off. When a field group
+    has this class, display: none hides the whole group. Clicking
+    a filter tab adds "hidden" to every group except the one that
+    matches, and removes it from the matching one (or all of
+    them, when "All fields" is clicked).
+  */
+  .notebook-group { margin-bottom: 2.2em; }
+  .notebook-group.hidden { display: none; }
+  .notebook-group h3 {
+    display: flex; align-items: center; gap: 0.6em;
+    font-size: 1.15em;
+    margin-bottom: 1em;
+  }
+  /*
+    .field-chip is the small colored dot shown next to each
+    field's name. Each field gets its own modifier class (.mech,
+    .chem, .mat) that pulls its color from the --chip-* variables
+    defined near the top of this file. When adding a new field,
+    add a matching .field-chip.yourfield rule here.
+  */
+  .field-chip {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .field-chip.mech { background: var(--chip-mech); }
+  .field-chip.chem { background: var(--chip-chem); }
+  .field-chip.mat { background: var(--chip-mat); }
+
+  /*
+    .notebook-grid lays out notebook cards in a responsive grid,
+    as many columns as fit, each at least 260px wide.
+    .notebook-card styles one individual card's box, border, and
+    internal spacing.
+  */
+  .notebook-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.3em;
+  }
+  .notebook-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.3em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+  }
+  .notebook-card .tag-row { display: flex; gap: 0.4em; flex-wrap: wrap; }
+  /*
+    .nb-tag is the small colored label on each card (e.g.
+    "MECHANICAL", "INTRO"). Like .field-chip above, each field has
+    its own color modifier class, and .nb-tag.level is the neutral
+    gray style used for the difficulty level label.
+  */
+  .nb-tag {
+    font-size: 0.72em;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 0.2em 0.6em;
+    border-radius: 4px;
+    color: #fff;
+  }
+  .nb-tag.mech { background: var(--chip-mech); }
+  .nb-tag.chem { background: var(--chip-chem); }
+  .nb-tag.mat { background: var(--chip-mat); }
+  .nb-tag.level { background: var(--bg-alt); color: var(--text); border: 1px solid var(--card-border); }
+  .notebook-card h4 { font-size: 1.05em; margin: 0; }
+  .notebook-card p { font-size: 0.9em; margin: 0; flex: 1; }
+  .notebook-card .nb-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.85em;
+    padding-top: 0.6em;
+    border-top: 1px solid var(--card-border);
+  }
+  .notebook-card .nb-footer a { font-weight: 600; }
+
+  /*
+    ==============================================================
+    TEAM SECTION: cards, avatars, and the dashed "add member" box
+    ==============================================================
+    .team-grid arranges team-card boxes in a responsive grid, the
+    same way .notebook-grid does above. .avatar styles the colored
+    photo/initials box at the top of each card (see "USE A REAL
+    PHOTO INSTEAD OF INITIALS" further down, in the HTML, for how
+    to swap this for an actual picture). .add-member-card styles
+    the dashed placeholder box at the end of the team grid.
+  */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.6em;
+  }
+  .team-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 1.4em;
+  }
+  .avatar {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head);
+    font-size: 2.6em;
+    font-weight: 700;
+    color: #fff;
+  }
+  .team-card h4 { margin: 0.9em 0 0.1em; font-size: 1.05em; }
+  .team-card .role { font-size: 0.85em; color: var(--accent); font-weight: 600; margin-bottom: 0.7em; }
+  .team-card p.bio { font-size: 0.88em; padding: 0 1.2em; margin: 0; color: var(--text); }
+  .team-card .socials { margin-top: 0.9em; display: flex; justify-content: center; gap: 0.7em; }
+  .team-card .socials a { color: var(--sidebar-fg-dim); font-size: 0.95em; }
+  .team-card .socials a:hover { color: var(--accent); }
+  .add-member-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7em;
+    border: 2px dashed var(--card-border);
+    border-radius: 8px;
+    min-height: 260px;
+    color: var(--sidebar-fg-dim);
+    font-size: 0.9em;
+    padding: 1.5em;
+    text-align: center;
+  }
+  .add-member-card .plus {
+    width: 50px; height: 50px; border-radius: 50%;
+    border: 2px dashed var(--card-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4em;
+  }
+
+  hr.major { border: none; border-top: 1px solid var(--card-border); margin: 2.5em 0; }
+
+  /*
+    ==============================================================
+    SIDEBAR  (the dark column with search, menu, fields, contact)
+    ==============================================================
+    Everything below styles the #sidebar column: its dark
+    background, the search box, the menu links, the small "Fields"
+    list with counts, and the footer text at the very bottom.
+  */
+  /* Sidebar */
+  #sidebar { background: var(--sidebar-bg); color: var(--sidebar-fg); }
+  #sidebar .inner { padding: 2.2em 1.8em; }
+  #sidebar h2 { color: #fff; font-size: 1.05em; }
+  #sidebar section { margin-bottom: 2.4em; }
+  #sidebar section:last-child { margin-bottom: 0; }
+  #search input {
+    width: 100%;
+    padding: 0.7em 1em;
+    border-radius: 4px;
+    border: 1px solid #3d414c;
+    background: #23262f;
+    color: #fff;
+    font-family: var(--font-body);
+  }
+  #search input::placeholder { color: var(--sidebar-fg-dim); }
+  nav#menu ul { list-style: none; padding: 0; margin: 0; }
+  nav#menu > ul > li { border-bottom: 1px solid #34363f; }
+  nav#menu a {
+    display: block;
+    padding: 0.65em 0.2em;
+    color: var(--sidebar-fg);
+    font-size: 0.95em;
+  }
+  nav#menu a:hover { color: #fff; text-decoration: none; }
+  nav#menu ul ul { padding-left: 1em; }
+  nav#menu ul ul a { font-size: 0.88em; color: var(--sidebar-fg-dim); padding: 0.45em 0.2em; }
+
+  .mini-fields { list-style: none; padding: 0; margin: 0; }
+  .mini-fields li {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5em 0;
+    font-size: 0.92em;
+    border-bottom: 1px solid #34363f;
+  }
+  .mini-fields li:last-child { border-bottom: none; }
+  .mini-fields .count {
+    background: #3a3d47;
+    border-radius: 999px;
+    padding: 0.1em 0.7em;
+    font-size: 0.82em;
+    color: #fff;
+  }
+
+  #sidebar p { font-size: 0.9em; color: var(--sidebar-fg-dim); }
+  ul.contact { list-style: none; padding: 0; margin: 0; font-size: 0.9em; }
+  ul.contact li { display: flex; gap: 0.7em; align-items: flex-start; margin-bottom: 0.8em; color: var(--sidebar-fg); }
+  ul.contact li i { width: 1.1em; margin-top: 0.2em; color: var(--accent); }
+
+  footer#footer { border-top: 1px solid #34363f; padding-top: 1.5em; }
+  footer#footer p.copyright { font-size: 0.8em; color: var(--sidebar-fg-dim); }
+
+  /*
+    ==============================================================
+    SMALL SCREEN ADJUSTMENTS (phones, narrow windows)
+    ==============================================================
+    This @media rule only takes effect when the browser window is
+    980px wide or narrower. It reduces the padding around the main
+    content and shrinks the big banner heading a bit so it fits
+    comfortably on smaller screens. Add more rules inside these
+    curly braces if other elements also need to shrink or
+    rearrange on small screens.
+  */
+  @media (max-width: 980px) {
+    #main .inner { padding: 1.8em 1.3em 3em; }
+    #banner h1 { font-size: 1.8em; }
+  }
+</style>
+</head>
+<body>
+<!--
+  From here down is the HTML: the actual content and structure of
+  the page. Everything above this point in the <style> block only
+  controlled appearance, and none of it will show up as visible
+  text.
+-->
+
+<div class="wrapper">
+  <!-- .wrapper holds the two main columns of the page: #main
+       (everything on the left: header, banner, notebook library,
+       team) and #sidebar (the dark column on the right). -->
+
+  <div id="main">
+    <div class="inner">
+
+      <!-- Top bar: site name/logo on the left, social icons on
+           the right. To change the site name, edit the text
+           inside <strong>...</strong> and after it. To add or
+           remove a social icon, copy or delete one whole <li>...
+           </li> line and change the fa-brands fa-xxxxx class to a
+           different Font Awesome icon name. -->
+      <header id="header">
+        <a href="#top" class="logo"><strong>NotebookLab</strong> STEM Learning</a>
+        <ul class="icons">
+          <li><a href="#" class="icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a></li>
+          <li><a href="#" class="icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a></li>
+          <li><a href="#" class="icon" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a></li>
+          <li><a href="#" class="icon" aria-label="Slack"><i class="fa-brands fa-slack"></i></a></li>
+        </ul>
+      </header>
+
+      <!-- Banner: the big introduction area. To edit it:
+             - <h1>...</h1> is the main headline
+             - <p class="lead">...</p> is the paragraph under it
+             - each <span class="badge">...</span> is one of the
+               three small pill labels ("Runnable code", etc.),
+               copy or delete one to add or remove a badge, and
+               change the fa-solid fa-xxxxx icon name as needed
+             - the two <li><a ... class="button">...</a></li>
+               lines are the two buttons, edit their text or
+               change href="#notebooks" to link elsewhere
+             - the <svg>...</svg> block draws the little notebook
+               illustration on the right using simple shapes, it
+               is optional decoration and can be deleted (along
+               with its wrapping <div class="art">...</div>)
+               without affecting the rest of the page -->
+      <section id="banner">
+        <div class="content">
+          <header>
+            <h1 id="top">Learning STEM, one cell at a time</h1>
+          </header>
+          <p class="lead">Jupyter notebooks bring live code, visualization, and narrative together in a single document. We collect and build notebooks that help students explore mechanical engineering, chemistry, and materials science through hands on computation instead of static slides.</p>
+          <div class="badge-row">
+            <span class="badge"><i class="fa-solid fa-code"></i> Runnable code</span>
+            <span class="badge"><i class="fa-solid fa-chart-line"></i> Live visualization</span>
+            <span class="badge"><i class="fa-solid fa-book-open"></i> Narrative explanations</span>
+          </div>
+          <ul class="actions">
+            <li><a href="#notebooks" class="button">Browse notebooks</a></li>
+            <li><a href="#team" class="button alt">Meet the team</a></li>
+          </ul>
+        </div>
+        <div class="art">
+          <svg class="notebook-icon-wrap" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="30" width="160" height="140" rx="10" fill="var(--bg-alt)" stroke="var(--card-border)" stroke-width="2"/>
+            <rect x="20" y="30" width="160" height="26" rx="10" fill="var(--accent)"/>
+            <circle cx="35" cy="43" r="4" fill="#fff"/>
+            <circle cx="48" cy="43" r="4" fill="#fff"/>
+            <circle cx="61" cy="43" r="4" fill="#fff"/>
+            <rect x="34" y="70" width="70" height="10" rx="2" fill="var(--chip-mech)"/>
+            <rect x="34" y="88" width="132" height="8" rx="2" fill="var(--card-border)"/>
+            <rect x="34" y="102" width="132" height="8" rx="2" fill="var(--card-border)"/>
+            <rect x="34" y="116" width="90" height="8" rx="2" fill="var(--card-border)"/>
+            <rect x="34" y="134" width="70" height="10" rx="2" fill="var(--chip-chem)"/>
+            <polyline points="34,155 55,148 70,160 90,140 110,152 132,144 150,158" fill="none" stroke="var(--chip-mat)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </section>
+
+      <!-- "Why notebooks for STEM" section: an <h2> title, a
+           subtitle, and 4 small feature boxes inside
+           <div class="features">. Each <article>...</article> is
+           one box. To add a box, copy one whole <article>...
+           </article> block, paste it inside .features, and change
+           the icon class, the <h3> title, and the description
+           text. To remove one, delete its <article> block. -->
+      <section class="block">
+        <header class="major">
+          <h2>Why notebooks for STEM</h2>
+          <p class="sub">A single environment for equations, code, and results</p>
+        </header>
+        <div class="features">
+          <article>
+            <span class="icon"><i class="fa-solid fa-flask"></i></span>
+            <div class="content">
+              <h3>Learn by doing</h3>
+              <p>Students change a parameter and immediately see how a stress curve, a titration result, or a stress strain plot responds.</p>
+            </div>
+          </article>
+          <article>
+            <span class="icon"><i class="fa-solid fa-diagram-project"></i></span>
+            <div class="content">
+              <h3>Theory next to code</h3>
+              <p>Markdown cells hold the derivation while the code cell right below it carries out the calculation, so nothing is left abstract.</p>
+            </div>
+          </article>
+          <article>
+            <span class="icon"><i class="fa-solid fa-users"></i></span>
+            <div class="content">
+              <h3>Built by instructors</h3>
+              <p>Every notebook here was written or reviewed by an instructor teaching that exact topic in a real course.</p>
+            </div>
+          </article>
+          <article>
+            <span class="icon"><i class="fa-solid fa-cloud"></i></span>
+            <div class="content">
+              <h3>Runs anywhere</h3>
+              <p>Open a notebook locally, on JupyterHub, or in a free cloud environment. No installation is required to get started.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <hr class="major" />
+
+      <!--
+        ============================================================
+        NOTEBOOK LIBRARY SECTION
+        ============================================================
+        ADD A NOTEBOOK FIELD
+        --------------------
+        A "field" is one category, like Mechanical Engineering. To
+        add a new field (for example Electrical Engineering):
+
+        1. Add a filter button inside .field-tabs below, matching
+           the pattern of the existing buttons. Give it a short,
+           unique data-field value, e.g. data-field="elec".
+        2. Add a new <div class="notebook-group" data-field="elec">
+           block, copying the structure of one of the existing
+           groups (open tag through closing </div>).
+        3. Pick a color for the new field. Add two lines near the
+           top of the <style> block, next to the other --chip-*
+           lines:
+             --chip-elec: #yourcolor;
+           then add matching CSS rules next to .field-chip.mat and
+           .nb-tag.mat:
+             .field-chip.elec { background: var(--chip-elec); }
+             .nb-tag.elec { background: var(--chip-elec); }
+        4. Optional: add a row to "Fields" in the sidebar (search
+           for "SIDEBAR MENU" below) so the count list stays
+           accurate.
+        The filter tabs work automatically. No JavaScript changes
+        are needed. The data-field value on the button and on the
+        notebook-group div must match exactly.
+
+        ADD A NOTEBOOK
+        ---------------
+        To add a notebook, copy one whole <div class="notebook-card">
+        block (from the opening div to its closing div) and paste it
+        inside the .notebook-grid of the field it belongs to, then
+        edit:
+          - nb-tag class (mech / chem / mat / your new field) and
+            the text inside it
+          - the level tag text (Intro / Intermediate / Advanced)
+          - the <h4> title
+          - the description paragraph
+          - the tools/libraries text in the footer
+          - the href="#" link, point it at your real notebook
+            (a GitHub link, an nbviewer link, or a Binder/Colab
+            launch link all work)
+        To remove a notebook, delete its whole notebook-card block.
+        ============================================================
+      -->
+      <section class="block" id="notebooks">
+        <header class="major">
+          <h2>Notebook library</h2>
+          <p class="sub">Filter by field to find notebooks for your course</p>
+        </header>
+
+        <div class="field-tabs" role="tablist">
+          <button class="field-tab active" data-field="all">All fields</button>
+          <button class="field-tab" data-field="mech">Mechanical Engineering</button>
+          <button class="field-tab" data-field="chem">Chemistry</button>
+          <button class="field-tab" data-field="mat">Materials Science</button>
+          <!-- Add new field tab buttons here, see "ADD A NOTEBOOK FIELD" above -->
+        </div>
+
+        <!-- FIELD GROUP: Mechanical Engineering (data-field="mech") -->
+        <div class="notebook-group" data-field="mech">
+          <h3><span class="field-chip mech"></span> Mechanical Engineering</h3>
+          <div class="notebook-grid">
+            <!-- Each .notebook-card below is one notebook. Copy/paste one to add another. -->
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intro</span></div>
+              <h4>Stress and Strain Simulator</h4>
+              <p>Plots stress strain curves for common alloys and lets students find yield point and ultimate strength from raw test data.</p>
+              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intermediate</span></div>
+              <h4>Beam Deflection Explorer</h4>
+              <p>Interactive sliders adjust load, length, and support type to visualize deflection along a beam in real time.</p>
+              <div class="nb-footer"><span>SciPy, ipywidgets</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Advanced</span></div>
+              <h4>Vibration Analysis of a Spring Mass System</h4>
+              <p>Solves the equation of motion for damped and undamped systems and compares natural frequency predictions to lab data.</p>
+              <div class="nb-footer"><span>SymPy, Plotly</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intro</span></div>
+              <h4>Heat Transfer in a Fin</h4>
+              <p>Walks through conduction and convection along a rectangular fin, comparing analytical and numerical solutions.</p>
+              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FIELD GROUP: Chemistry (data-field="chem") -->
+        <div class="notebook-group" data-field="chem">
+          <h3><span class="field-chip chem"></span> Chemistry</h3>
+          <div class="notebook-grid">
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag chem">Chemistry</span><span class="nb-tag level">Intro</span></div>
+              <h4>Titration Curve Builder</h4>
+              <p>Generates titration curves for strong and weak acid base pairs and highlights the equivalence point automatically.</p>
+              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag chem">Chemistry</span><span class="nb-tag level">Intermediate</span></div>
+              <h4>Reaction Kinetics Fitting</h4>
+              <p>Fits rate constants to concentration versus time data and lets students compare zero, first, and second order models.</p>
+              <div class="nb-footer"><span>SciPy, Pandas</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag chem">Chemistry</span><span class="nb-tag level">Advanced</span></div>
+              <h4>Molecular Orbital Visualizer</h4>
+              <p>Builds simple molecular orbital diagrams from atomic orbital coefficients for small diatomic molecules.</p>
+              <div class="nb-footer"><span>RDKit, Plotly</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag chem">Chemistry</span><span class="nb-tag level">Intro</span></div>
+              <h4>Gas Laws Playground</h4>
+              <p>Sliders for pressure, volume, and temperature show how the ideal gas law connects to real experimental deviations.</p>
+              <div class="nb-footer"><span>ipywidgets</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FIELD GROUP: Materials Science (data-field="mat") -->
+        <div class="notebook-group" data-field="mat">
+          <h3><span class="field-chip mat"></span> Materials Science</h3>
+          <div class="notebook-grid">
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag mat">Materials</span><span class="nb-tag level">Intro</span></div>
+              <h4>Crystal Structure Explorer</h4>
+              <p>Renders unit cells for cubic and hexagonal lattices and calculates packing fraction and coordination number.</p>
+              <div class="nb-footer"><span>ASE, Plotly</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag mat">Materials</span><span class="nb-tag level">Intermediate</span></div>
+              <h4>Phase Diagram Reader</h4>
+              <p>Guides students through reading binary phase diagrams and applying the lever rule to find phase fractions.</p>
+              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag mat">Materials</span><span class="nb-tag level">Advanced</span></div>
+              <h4>Fatigue Life Prediction</h4>
+              <p>Applies S N curve models to predict fatigue life and compares predictions against sample lab fatigue data.</p>
+              <div class="nb-footer"><span>SciPy, Pandas</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag mat">Materials</span><span class="nb-tag level">Intro</span></div>
+              <h4>Grain Size and Hardness</h4>
+              <p>Uses the Hall Petch relationship to connect grain size measurements to hardness and yield strength trends.</p>
+              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+          </div>
+        </div>
+        <!-- End Materials Science group. To add a whole new field,
+             copy from the "FIELD GROUP" comment above through this
+             point, then relabel it. See "ADD A NOTEBOOK FIELD" near
+             the top of this section. -->
+
+      </section>
+
+      <hr class="major" />
+
+      <!--
+        ============================================================
+        TEAM SECTION
+        ============================================================
+        ADD A TEAM MEMBER
+        ------------------
+        Copy one whole <div class="team-card"> block (opening div
+        through its closing div) and paste it before the
+        "add-member-card" div below, then edit:
+          - the two-letter initials inside the .avatar div
+          - the gradient colors in that div's style="background:
+            linear-gradient(...)" if you want a different color
+          - the <h4> name
+          - the .role text
+          - the .bio paragraph
+          - the social links (href="#"), point them at real
+            profiles or delete the ones you do not need
+
+        USE A REAL PHOTO INSTEAD OF INITIALS
+        -------------------------------------
+        Replace the <div class="avatar" ...>AR</div> element with
+        an <img> tag, for example:
+          <img class="avatar" src="path/or/url/to/photo.jpg" alt="Name">
+        The .avatar CSS rule already sets sizing (aspect-ratio,
+        width), so an <img> with class="avatar" will fit the same
+        way the colored circles do.
+
+        To remove a team member, delete their whole team-card block.
+        The dashed "Add a team member" card at the end is just a
+        visual placeholder and can be deleted once you no longer
+        need it, or left in as a reminder for future additions.
+        ============================================================
+      -->
+      <section class="block" id="team">
+        <header class="major">
+          <h2>Our team</h2>
+          <p class="sub">Instructors and contributors building the notebook library</p>
+        </header>
+        <div class="team-grid">
+
+          <!-- TEAM CARD: copy this whole block to add a member -->
+          <div class="team-card">
+            <div class="avatar" style="background:linear-gradient(135deg,#3b6ea5,#274a72);">AR</div>
+            <h4>Dr. Amara Reyes</h4>
+            <div class="role">Mechanical Engineering Lead</div>
+            <p class="bio">Teaches statics and dynamics and writes most of the mechanical engineering notebooks, with a focus on turning textbook problems into interactive simulations.</p>
+            <div class="socials">
+              <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+              <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+          </div>
+
+          <div class="team-card">
+            <div class="avatar" style="background:linear-gradient(135deg,#4e8f5e,#2f5c3a);">JK</div>
+            <h4>Jian Kim</h4>
+            <div class="role">Chemistry Content Author</div>
+            <p class="bio">Former high school chemistry teacher who now builds notebooks that connect classroom demonstrations to computational models.</p>
+            <div class="socials">
+              <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+              <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+          </div>
+
+          <div class="team-card">
+            <div class="avatar" style="background:linear-gradient(135deg,#9b5bb0,#61336f);">PS</div>
+            <h4>Priya Sharma</h4>
+            <div class="role">Materials Science Lead</div>
+            <p class="bio">Researches fatigue in metals and designs notebooks that let undergraduates run the same analyses used in her lab.</p>
+            <div class="socials">
+              <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+              <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+          </div>
+
+          <div class="team-card">
+            <div class="avatar" style="background:linear-gradient(135deg,#d4572a,#8f3417);">TO</div>
+            <h4>Tobias Olsen</h4>
+            <div class="role">Platform and Tooling</div>
+            <p class="bio">Maintains the JupyterHub deployment and cloud launch links so every notebook opens with a single click, no setup required.</p>
+            <div class="socials">
+              <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+              <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+          </div>
+
+          <div class="add-member-card">
+            <div class="plus"><i class="fa-solid fa-plus"></i></div>
+            <div>Add a team member<br/>photo and bio go here</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!--
+        ============================================================
+        ADD A NEW SECTION
+        ============================================================
+        To add a brand new part of the page (for example "Upcoming
+        Workshops" or "Sponsors"), copy this template and paste it
+        wherever you want it to appear, between an <hr class="major" />
+        and the next one:
+
+          <hr class="major" />
+          <section class="block" id="your-section-id">
+            <header class="major">
+              <h2>Your Section Title</h2>
+              <p class="sub">A short line describing the section</p>
+            </header>
+            <p>Your content goes here. You can also reuse the
+               .features, .notebook-grid, or .team-grid layouts
+               from above if you want cards instead of plain text.</p>
+          </section>
+
+        Give it a unique id (used for menu links and the browser's
+        address bar, e.g. #your-section-id). Then add a link to it
+        in the sidebar menu, see "SIDEBAR MENU" below.
+        ============================================================
+      -->
+
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <div class="inner">
+
+      <section id="search">
+        <!-- A simple search box. Note: it does not actually
+             filter or search anything on this page by itself,
+             it is a visual placeholder matching the original
+             template design. Wiring it up to actually filter
+             notebooks would require additional JavaScript. -->
+        <form onsubmit="return false;">
+          <input type="text" name="query" id="query" placeholder="Search notebooks" />
+        </form>
+      </section>
+
+      <!--
+        SIDEBAR MENU
+        ------------
+        This menu is plain links (href="#some-id") pointing at the
+        section ids used in the main column (id="notebooks",
+        id="team", and so on). It does not update itself.
+
+        - When you add a new field, consider adding a line inside
+          the "Notebook Library" submenu <ul> below.
+        - When you add a whole new section (see "ADD A NEW SECTION"
+          in the main column), add a <li><a href="#your-section-id">
+          Your Section Title</a></li> line here so people can jump
+          to it.
+        - The "Fields" list further down just shows a name and a
+          count. Update the count number by hand when you add or
+          remove notebooks in a field, or add a new <li> line for
+          a brand new field.
+      -->
+      <nav id="menu">
+        <header class="major"><h2>Menu</h2></header>
+        <ul>
+          <li><a href="#top">Home</a></li>
+          <li><a href="#notebooks">Notebook Library</a></li>
+          <li>
+            <ul>
+              <li><a href="#notebooks">Mechanical Engineering</a></li>
+              <li><a href="#notebooks">Chemistry</a></li>
+              <li><a href="#notebooks">Materials Science</a></li>
+              <!-- Add a line here for each new field -->
+            </ul>
+          </li>
+          <li><a href="#team">Our Team</a></li>
+          <li><a href="#footer">Contact</a></li>
+          <!-- Add a line here for each new top-level section -->
+        </ul>
+      </nav>
+
+      <section>
+        <header class="major"><h2>Fields</h2></header>
+        <ul class="mini-fields">
+          <li><span><span class="field-chip mech"></span> Mechanical Engineering</span><span class="count">4</span></li>
+          <li><span><span class="field-chip chem"></span> Chemistry</span><span class="count">4</span></li>
+          <li><span><span class="field-chip mat"></span> Materials Science</span><span class="count">4</span></li>
+          <!-- Add a line here for each new field, update counts by hand -->
+        </ul>
+      </section>
+
+      <section>
+        <header class="major"><h2>Get in touch</h2></header>
+        <p>Have a notebook to contribute, or a course that could use one? Reach out and we will help you get it published.</p>
+        <ul class="contact">
+          <li><i class="fa-solid fa-envelope"></i><a href="mailto:hello@notebooklab.edu">hello@notebooklab.edu</a></li>
+          <li><i class="fa-brands fa-github"></i><a href="#">github.com/notebooklab</a></li>
+        </ul>
+      </section>
+
+      <footer id="footer">
+        <p class="copyright">Built for students and instructors exploring STEM through code. Layout inspired by Editorial, HTML5 UP.</p>
+      </footer>
+
+    </div>
+  </div>
+
+</div>
+
+<!--
+  ============================================================
+  JAVASCRIPT (page interactivity)
+  ============================================================
+  This is the only functional code on the page, and it powers
+  just one thing: clicking a field filter button (All fields /
+  Mechanical Engineering / Chemistry / Materials Science) up in
+  the Notebook Library section.
+
+  In plain terms, this script:
+    1. Finds every filter button (elements with class="field-tab")
+       and every notebook group (elements with
+       class="notebook-group").
+    2. Waits for someone to click a filter button.
+    3. When a button is clicked, it first removes the "active"
+       highlight from every button, then adds "active" to the one
+       just clicked (this is what makes the clicked tab turn
+       orange).
+    4. It then checks that button's data-field="..." value (for
+       example "mech") and compares it against each notebook
+       group's own data-field="..." value. Any group that does
+       not match gets the CSS class "hidden" added to it (which
+       the CSS rule .notebook-group.hidden hides from view), and
+       any group that does match has "hidden" removed so it shows.
+    5. Clicking "All fields" (data-field="all") matches every
+       group, so nothing stays hidden.
+
+  You do not need to edit this script to add notebooks, fields,
+  team members, or new sections, those are all done by editing
+  the HTML further up, as explained in the comments throughout
+  this file. This script will keep working automatically as long
+  as new field groups and filter buttons use matching
+  data-field="..." values (see "ADD A NOTEBOOK FIELD" above).
+  ============================================================
+-->
+<script>
+  (function() {
+    var tabs = document.querySelectorAll('.field-tab');
+    var groups = document.querySelectorAll('.notebook-group');
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        var field = tab.getAttribute('data-field');
+        groups.forEach(function(g) {
+          if (field === 'all' || g.getAttribute('data-field') === field) {
+            g.classList.remove('hidden');
+          } else {
+            g.classList.add('hidden');
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
