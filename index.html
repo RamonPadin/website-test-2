@@ -107,6 +107,17 @@
   5. "SIDEBAR MENU"          - keep the sidebar links in sync
   6. "COLOR AND FONT SETTINGS" - change the color palette or fonts
      for the entire page in one place
+  7. "REPLACE THIS ILLUSTRATION WITH A REAL IMAGE" - swap the
+     banner graphic (near the top of the page, below the
+     "Browse notebooks" / "Meet the team" buttons) for a photo
+     or logo
+  8. "USE A REAL PHOTO INSTEAD OF INITIALS" - swap a team member's
+     colored initials circle for an actual photo
+  9. "SEARCH AND FILTER LOGIC" - how the notebook search box and
+     field tabs filter the notebook cards
+  10. "6 NOTEBOOK LIMIT AND \"SEE ALL\" PAGES" - how the 6-card cap
+      per field and its dedicated overflow pages work, and how to
+      keep them updated
 
   Colors, fonts, and spacing mostly live at the top of the
   <style> block inside a section marked :root { ... }. Change a
@@ -203,7 +214,8 @@
     --card-border: #e7e7ea;
     --chip-mech: #3b6ea5;
     --chip-chem: #4e8f5e;
-    --chip-mat: #9b5bb0;
+    --chip-mat: #ba1212;
+    --chip-comp: #9b5bb0;
     --font-head: 'Roboto Slab', serif;
     --font-body: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
   }
@@ -502,6 +514,75 @@
   .field-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
 
   /*
+    NOTEBOOK SEARCH BOX
+    --------------------
+    The search input that sits above the field tabs. It is a
+    plain text <input> with a magnifying glass icon placed on top
+    of it using absolute positioning (the icon does not affect
+    layout, it just sits visually inside the left edge of the
+    box). The actual searching/filtering behavior is JavaScript,
+    see the big comment above the <script> tag near the end of
+    this file, search for "SEARCH AND FILTER LOGIC".
+  */
+  .notebook-search {
+    position: relative;
+    max-width: 420px;
+    margin-bottom: 1.2em;
+  }
+  .notebook-search input {
+    width: 100%;
+    padding: 0.65em 1em 0.65em 2.4em;
+    border-radius: 6px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95em;
+  }
+  .notebook-search input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .notebook-search i {
+    position: absolute;
+    left: 0.9em;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--sidebar-fg-dim);
+    font-size: 0.9em;
+    pointer-events: none;
+  }
+  /* Shown only when a search/filter combination matches nothing. */
+  .no-results {
+    display: none;
+    padding: 1.4em;
+    border: 1px dashed var(--card-border);
+    border-radius: 8px;
+    color: var(--sidebar-fg-dim);
+    font-size: 0.92em;
+  }
+  .no-results.visible { display: block; }
+
+  /*
+    "SEE ALL" LINK
+    ---------------
+    Appears under a field's notebook grid, but only once that
+    field has more than 6 notebook cards (see the "6 NOTEBOOK
+    LIMIT" comment further down, in the HTML, near the notebook
+    library section). Hidden by default with display: none, the
+    JavaScript adds the "visible" class to reveal it once needed.
+  */
+  .see-all-link {
+    display: none;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: 1.1em;
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+  .see-all-link.visible { display: inline-flex; }
+
+  /*
     .notebook-group.hidden is the rule the JavaScript at the
     bottom of this file switches on and off. When a field group
     has this class, display: none hides the whole group. Clicking
@@ -531,7 +612,7 @@
   .field-chip.mech { background: var(--chip-mech); }
   .field-chip.chem { background: var(--chip-chem); }
   .field-chip.mat { background: var(--chip-mat); }
-
+  .field-chip.comp { background: var(--chip-comp); }
   /*
     .notebook-grid lays out notebook cards in a responsive grid,
     as many columns as fit, each at least 260px wide.
@@ -571,6 +652,7 @@
   .nb-tag.mech { background: var(--chip-mech); }
   .nb-tag.chem { background: var(--chip-chem); }
   .nb-tag.mat { background: var(--chip-mat); }
+  .nb-tag.comp { background: var(--chip-comp); }
   .nb-tag.level { background: var(--bg-alt); color: var(--text); border: 1px solid var(--card-border); }
   .notebook-card h4 { font-size: 1.05em; margin: 0; }
   .notebook-card p { font-size: 0.9em; margin: 0; flex: 1; }
@@ -614,6 +696,11 @@
     font-size: 2.6em;
     font-weight: 700;
     color: #fff;
+    /* object-fit: cover only affects <img> elements (it does
+       nothing on the colored initials <div>s), it makes a photo
+       fill this box and crop to fit, instead of stretching or
+       squishing to match the 4:3 shape. */
+    object-fit: cover;
   }
   .team-card h4 { margin: 0.9em 0 0.1em; font-size: 1.05em; }
   .team-card .role { font-size: 0.85em; color: var(--accent); font-weight: 600; margin-bottom: 0.7em; }
@@ -744,12 +831,9 @@
            </li> line and change the fa-brands fa-xxxxx class to a
            different Font Awesome icon name. -->
       <header id="header">
-        <a href="#top" class="logo"><strong>NotebookLab</strong> STEM Learning</a>
+        <a href="#top" class="logo"><strong>Jupyter Notebooks </strong> AI/ML and STEM Learning</a>
         <ul class="icons">
           <li><a href="#" class="icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a></li>
-          <li><a href="#" class="icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a></li>
-          <li><a href="#" class="icon" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a></li>
-          <li><a href="#" class="icon" aria-label="Slack"><i class="fa-brands fa-slack"></i></a></li>
         </ul>
       </header>
 
@@ -763,19 +847,47 @@
              - the two <li><a ... class="button">...</a></li>
                lines are the two buttons, edit their text or
                change href="#notebooks" to link elsewhere
-             - the <svg>...</svg> block draws the little notebook
-               illustration on the right using simple shapes, it
-               is optional decoration and can be deleted (along
-               with its wrapping <div class="art">...</div>)
-               without affecting the rest of the page -->
+             - the <svg>...</svg> block below draws the little
+               notebook illustration using simple shapes (no image
+               file needed). It sits to the right of the text on
+               wide screens, and below the buttons on narrow
+               screens/phones, which is why it can look like it is
+               "under" the buttons.
+
+        REPLACE THIS ILLUSTRATION WITH A REAL IMAGE
+        ---------------------------------------------
+        1. Add your image file to the repository, for example in
+           an images/ folder next to index.html (PNG, JPG, or SVG
+           all work).
+        2. Delete everything between <div class="art"> and its
+           closing </div>, meaning the whole <svg>...</svg> block
+           below, and replace it with a single line:
+             <img class="notebook-icon-wrap" src="images/yourfile.png" alt="describe the image here">
+           Keep class="notebook-icon-wrap" so it uses the existing
+           sizing rules.
+        3. The .notebook-icon-wrap CSS rule (in the <style> block
+           near the top of this file, search for
+           ".notebook-icon-wrap") currently sets a fixed 220px by
+           220px box, which suits a roughly square icon. For a
+           wider photo or logo, change that rule to something like:
+             .notebook-icon-wrap { max-width: 320px; height: auto; }
+           so the image keeps its natural proportions instead of
+           being forced into a square.
+        4. To remove the graphic entirely and let the banner text
+           take the full width, delete the whole
+           <div class="art">...</div> block (step 2's replacement
+           included).
+        This same img-tag approach is how team member photos are
+        added too, see "USE A REAL PHOTO INSTEAD OF INITIALS" further
+        down in the Team section comments. -->
       <section id="banner">
         <div class="content">
           <header>
             <h1 id="top">Learning STEM, one cell at a time</h1>
           </header>
-          <p class="lead">Jupyter notebooks bring live code, visualization, and narrative together in a single document. We collect and build notebooks that help students explore mechanical engineering, chemistry, and materials science through hands on computation instead of static slides.</p>
+          <p class="lead">Jupyter notebooks bring live code, visualization, and narrative together in a single document. We build notebooks that help students explore materials science, mechanical engineering, chemistry, and computer science and many more topics through hands on computation instead of static slides.</p>
           <div class="badge-row">
-            <span class="badge"><i class="fa-solid fa-code"></i> Runnable code</span>
+            <span class="badge"><i class="fa-solid fa-code"></i> Interactive cells</span>
             <span class="badge"><i class="fa-solid fa-chart-line"></i> Live visualization</span>
             <span class="badge"><i class="fa-solid fa-book-open"></i> Narrative explanations</span>
           </div>
@@ -784,6 +896,9 @@
             <li><a href="#team" class="button alt">Meet the team</a></li>
           </ul>
         </div>
+        <!-- .art holds the banner graphic. See the "REPLACE THIS
+             ILLUSTRATION WITH A REAL IMAGE" instructions above for
+             how to swap the SVG below for your own image file. -->
         <div class="art">
           <svg class="notebook-icon-wrap" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <rect x="20" y="30" width="160" height="140" rx="10" fill="var(--bg-alt)" stroke="var(--card-border)" stroke-width="2"/>
@@ -810,36 +925,36 @@
            text. To remove one, delete its <article> block. -->
       <section class="block">
         <header class="major">
-          <h2>Why notebooks for STEM</h2>
-          <p class="sub">A single environment for equations, code, and results</p>
+          <h2>Why Jupyter notebooks for STEM</h2>
+          <p class="sub">The University of Florida is developing python Jupyter notebooks that bridge the gap between STEM domain knowledge and concepts in artificial intelligence. These notebooks will be used in multiple undergraduate courses to showcase how computational methods and AI are used within domain disciplines. The notebooks are designed to be interactive experiences that guide students through theoretical background concepts, and into real world data applications and computational methods that are integrated by design and reflect real workforce practices. These notebooks are being piloted at UF with the goal of broader adoption across universities in both the US, as well as globally.</p>
         </header>
         <div class="features">
           <article>
             <span class="icon"><i class="fa-solid fa-flask"></i></span>
             <div class="content">
               <h3>Learn by doing</h3>
-              <p>Students change a parameter and immediately see how a stress curve, a titration result, or a stress strain plot responds.</p>
+              <p>Students change a parameter and immediately see how a stress curve, a gas mixing simulation, or a convolutional neural network responds.</p>
             </div>
           </article>
           <article>
             <span class="icon"><i class="fa-solid fa-diagram-project"></i></span>
             <div class="content">
               <h3>Theory next to code</h3>
-              <p>Markdown cells hold the derivation while the code cell right below it carries out the calculation, so nothing is left abstract.</p>
+              <p>Markdown cells give detailed explanations and equation derivations while the code cell right below it carries out the calculation, so nothing is left abstract.</p>
             </div>
           </article>
           <article>
             <span class="icon"><i class="fa-solid fa-users"></i></span>
             <div class="content">
-              <h3>Built by instructors</h3>
-              <p>Every notebook here was written or reviewed by an instructor teaching that exact topic in a real course.</p>
+              <h3>Built by experts</h3>
+              <p>Every notebook here was written and/or reviewed by a team of experts and tailored for instructors teaching STEM topic in real courses.</p>
             </div>
           </article>
           <article>
             <span class="icon"><i class="fa-solid fa-cloud"></i></span>
             <div class="content">
-              <h3>Runs anywhere</h3>
-              <p>Open a notebook locally, on JupyterHub, or in a free cloud environment. No installation is required to get started.</p>
+              <h3>Easy setup</h3>
+              <p>Every notebook automaticly installs libraries necesary to run the notebook. No installation is required to get started.</p>
             </div>
           </article>
         </div>
@@ -893,21 +1008,74 @@
             (a GitHub link, an nbviewer link, or a Binder/Colab
             launch link all work)
         To remove a notebook, delete its whole notebook-card block.
+
+        6 NOTEBOOK LIMIT AND "SEE ALL" PAGES
+        ---------------------------------------
+        Each field only ever shows its first 6 notebook cards on
+        this homepage, this happens automatically in JavaScript
+        (search this file for "ENFORCE THE 6 NOTEBOOK LIMIT" near
+        the <script> tag at the end of the file), you do not need
+        to do anything for the limit itself to work.
+
+        Once a field has more than 6 notebook cards, a "See all"
+        link automatically appears under that field's grid, and
+        the extra cards (7th onward) are hidden here on the
+        homepage. That link points to a separate, dedicated page
+        for that field, for example notebooks-mechanical.html,
+        which is a standalone file that lists every notebook in
+        that field with no limit.
+
+        These dedicated pages do not update themselves. When you
+        add a 7th (or later) notebook card to a field here on the
+        homepage, also open that field's dedicated page (for
+        example notebooks-mechanical.html) and add the same
+        notebook-card block there too, following the same
+        "ADD A NOTEBOOK" steps above, the dedicated pages use the
+        exact same .notebook-card markup and styling. Each
+        dedicated page has its own copy of these instructions at
+        the top of its <body>.
+
+        If you add a whole new field (see "ADD A NOTEBOOK FIELD"
+        above), also create a matching dedicated page for it. The
+        simplest way is to copy an existing one, for example
+        notebooks-mechanical.html, rename the copy (e.g.
+        notebooks-electrical.html), and edit its title, heading,
+        and notebook cards. Then update that field's "See all"
+        link on this homepage (a few lines below, inside its
+        notebook-group) to point at the new file's name.
         ============================================================
       -->
       <section class="block" id="notebooks">
         <header class="major">
           <h2>Notebook library</h2>
-          <p class="sub">Filter by field to find notebooks for your course</p>
+          <p class="sub">Search or filter by field to find notebooks for your course</p>
         </header>
+
+        <!-- Search box: type here to filter notebook cards by
+             title, description, or the tools/libraries listed in
+             each card's footer. Works together with the field
+             tabs below, so a search only looks within whichever
+             field (or "All fields") is currently selected. While
+             you are searching, the 6 notebook limit described
+             above is temporarily lifted so every match can show,
+             it comes back once the search box is cleared. -->
+        <div class="notebook-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="notebook-search-input" placeholder="Search notebooks by title, topic, or tool..." aria-label="Search notebooks">
+        </div>
 
         <div class="field-tabs" role="tablist">
           <button class="field-tab active" data-field="all">All fields</button>
           <button class="field-tab" data-field="mech">Mechanical Engineering</button>
           <button class="field-tab" data-field="chem">Chemistry</button>
           <button class="field-tab" data-field="mat">Materials Science</button>
+          <button class="field-tab" data-field="comp">Computer Science</button>
           <!-- Add new field tab buttons here, see "ADD A NOTEBOOK FIELD" above -->
         </div>
+
+        <!-- Shown automatically when a search term (combined with
+             the active field tab) matches zero notebook cards. -->
+        <p class="no-results" id="notebooks-no-results">No notebooks match your search. Try a different word, or clear the search box and pick a different field above.</p>
 
         <!-- FIELD GROUP: Mechanical Engineering (data-field="mech") -->
         <div class="notebook-group" data-field="mech">
@@ -916,29 +1084,34 @@
             <!-- Each .notebook-card below is one notebook. Copy/paste one to add another. -->
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intro</span></div>
-              <h4>Stress and Strain Simulator</h4>
-              <p>Plots stress strain curves for common alloys and lets students find yield point and ultimate strength from raw test data.</p>
-              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Materials Testing</h4>
+              <p>Plots stress strain curves for common alloys and lets students find yield point and ultimate strength from synthetic data.</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intermediate</span></div>
-              <h4>Beam Deflection Explorer</h4>
-              <p>Interactive sliders adjust load, length, and support type to visualize deflection along a beam in real time.</p>
-              <div class="nb-footer"><span>SciPy, ipywidgets</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Mechanical Testing : Hardness </h4>
+              <p>introduction to standard hardness testing methods. Image analysis of indentations to identify test method and calculate hardness using both computer vision and convolutional neural networks. </p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Advanced</span></div>
-              <h4>Vibration Analysis of a Spring Mass System</h4>
-              <p>Solves the equation of motion for damped and undamped systems and compares natural frequency predictions to lab data.</p>
-              <div class="nb-footer"><span>SymPy, Plotly</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Fractography and Fractals</h4>
+              <p>Introduction to fractography and fractal dimension.Training and testing of convolutional naural network using 2D height maps.</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intro</span></div>
-              <h4>Heat Transfer in a Fin</h4>
-              <p>Walks through conduction and convection along a rectangular fin, comparing analytical and numerical solutions.</p>
-              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Corrosion</h4>
+              <p>TBD.</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
           </div>
+          <!-- Appears automatically once this field has more than
+               6 notebook cards. Points at the dedicated page for
+               this field, update the href if you rename that
+               file. -->
+          <a class="see-all-link" href="notebooks-mechanical.html">See all Mechanical Engineering notebooks <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
         <!-- FIELD GROUP: Chemistry (data-field="chem") -->
@@ -947,29 +1120,30 @@
           <div class="notebook-grid">
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag chem">Chemistry</span><span class="nb-tag level">Intro</span></div>
-              <h4>Titration Curve Builder</h4>
-              <p>Generates titration curves for strong and weak acid base pairs and highlights the equivalence point automatically.</p>
-              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Diffusion - Molecular Kinetics</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag chem">Chemistry</span><span class="nb-tag level">Intermediate</span></div>
-              <h4>Reaction Kinetics Fitting</h4>
-              <p>Fits rate constants to concentration versus time data and lets students compare zero, first, and second order models.</p>
-              <div class="nb-footer"><span>SciPy, Pandas</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Chemistry Notebook 2</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag chem">Chemistry</span><span class="nb-tag level">Advanced</span></div>
-              <h4>Molecular Orbital Visualizer</h4>
-              <p>Builds simple molecular orbital diagrams from atomic orbital coefficients for small diatomic molecules.</p>
-              <div class="nb-footer"><span>RDKit, Plotly</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Chemistry Notebook 3</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag chem">Chemistry</span><span class="nb-tag level">Intro</span></div>
-              <h4>Gas Laws Playground</h4>
-              <p>Sliders for pressure, volume, and temperature show how the ideal gas law connects to real experimental deviations.</p>
-              <div class="nb-footer"><span>ipywidgets</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Chemistry Notebook 4</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
           </div>
+          <a class="see-all-link" href="notebooks-chemistry.html">See all Chemistry notebooks <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
         <!-- FIELD GROUP: Materials Science (data-field="mat") -->
@@ -978,29 +1152,62 @@
           <div class="notebook-grid">
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag mat">Materials</span><span class="nb-tag level">Intro</span></div>
-              <h4>Crystal Structure Explorer</h4>
-              <p>Renders unit cells for cubic and hexagonal lattices and calculates packing fraction and coordination number.</p>
-              <div class="nb-footer"><span>ASE, Plotly</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Materials Science Notebook 1</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag mat">Materials</span><span class="nb-tag level">Intermediate</span></div>
-              <h4>Phase Diagram Reader</h4>
-              <p>Guides students through reading binary phase diagrams and applying the lever rule to find phase fractions.</p>
-              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Materials Science Notebook 2</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag mat">Materials</span><span class="nb-tag level">Advanced</span></div>
-              <h4>Fatigue Life Prediction</h4>
-              <p>Applies S N curve models to predict fatigue life and compares predictions against sample lab fatigue data.</p>
-              <div class="nb-footer"><span>SciPy, Pandas</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Materials Science Notebook 3</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
             <div class="notebook-card">
               <div class="tag-row"><span class="nb-tag mat">Materials</span><span class="nb-tag level">Intro</span></div>
-              <h4>Grain Size and Hardness</h4>
-              <p>Uses the Hall Petch relationship to connect grain size measurements to hardness and yield strength trends.</p>
-              <div class="nb-footer"><span>NumPy, Matplotlib</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <h4>Materials Science Notebook 4</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
           </div>
+          <a class="see-all-link" href="notebooks-materials-science.html">See all Materials Science notebooks <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <!-- FIELD GROUP: Materials Science (data-field="comp") -->
+        <div class="notebook-group" data-field="comp">
+          <h3><span class="field-chip comp"></span> Computer Science</h3>
+          <div class="notebook-grid">
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag comp">Computer Science</span><span class="nb-tag level">Intro</span></div>
+              <h4>Comp Sci notebook 1</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag comp">Computer Science</span><span class="nb-tag level">Intermediate</span></div>
+              <h4>Comp Sci notebook 2</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag comp">Computer Science</span><span class="nb-tag level">Advanced</span></div>
+              <h4>Comp Sci notebook 3</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+            <div class="notebook-card">
+              <div class="tag-row"><span class="nb-tag comp">Computer Science</span><span class="nb-tag level">Intro</span></div>
+              <h4>Comp Sci notebook 4</h4>
+              <p>TBD</p>
+              <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+            </div>
+          </div>
+          <a class="see-all-link" href="notebooks-computer-science.html">See all Computer Science notebooks <i class="fa-solid fa-arrow-right"></i></a>
         </div>
         <!-- End Materials Science group. To add a whole new field,
              copy from the "FIELD GROUP" comment above through this
@@ -1054,9 +1261,9 @@
           <!-- TEAM CARD: copy this whole block to add a member -->
           <div class="team-card">
             <div class="avatar" style="background:linear-gradient(135deg,#3b6ea5,#274a72);">AR</div>
-            <h4>Dr. Amara Reyes</h4>
-            <div class="role">Mechanical Engineering Lead</div>
-            <p class="bio">Teaches statics and dynamics and writes most of the mechanical engineering notebooks, with a focus on turning textbook problems into interactive simulations.</p>
+            <h4>Dr. Nancy Ruzycki</h4>
+            <div class="role">UF MSE Professor and PI</div>
+            <p class="bio">TBD</p>
             <div class="socials">
               <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
               <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
@@ -1065,10 +1272,10 @@
           </div>
 
           <div class="team-card">
-            <div class="avatar" style="background:linear-gradient(135deg,#4e8f5e,#2f5c3a);">JK</div>
-            <h4>Jian Kim</h4>
-            <div class="role">Chemistry Content Author</div>
-            <p class="bio">Former high school chemistry teacher who now builds notebooks that connect classroom demonstrations to computational models.</p>
+            <div class="avatar" style="background:linear-gradient(135deg,#4e8f5e,#2f5c3a);">RH</div>
+            <h4>Dr. Richard Hennig</h4>
+            <div class="role">UF MSE Professor</div>
+            <p class="bio">TBD</p>
             <div class="socials">
               <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
               <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
@@ -1077,10 +1284,10 @@
           </div>
 
           <div class="team-card">
-            <div class="avatar" style="background:linear-gradient(135deg,#9b5bb0,#61336f);">PS</div>
-            <h4>Priya Sharma</h4>
-            <div class="role">Materials Science Lead</div>
-            <p class="bio">Researches fatigue in metals and designs notebooks that let undergraduates run the same analyses used in her lab.</p>
+            <div class="avatar" style="background:linear-gradient(135deg,#9b5bb0,#61336f);">CC</div>
+            <h4>Dr. Clotilde Cucinotta</h4>
+            <div class="role">Chemistry Notebook Lead</div>
+            <p class="bio">TBD</p>
             <div class="socials">
               <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
               <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
@@ -1089,10 +1296,22 @@
           </div>
 
           <div class="team-card">
-            <div class="avatar" style="background:linear-gradient(135deg,#d4572a,#8f3417);">TO</div>
-            <h4>Tobias Olsen</h4>
-            <div class="role">Platform and Tooling</div>
-            <p class="bio">Maintains the JupyterHub deployment and cloud launch links so every notebook opens with a single click, no setup required.</p>
+            <div class="avatar" style="background:linear-gradient(135deg,#d4572a,#8f3417);">RP</div>
+            <h4>Dr. Ramón F. Padín Monroig</h4>
+            <div class="role">Mechanical Engineering Notebook Lead</div>
+            <p class="bio">Mechanical engineer with a PhD in materials science specializing in metallurgy. Writes most of the mechanical/materials engineering notebooks.</p>
+            <div class="socials">
+              <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+              <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+          </div>
+
+          <div class="team-card">
+            <div class="avatar" style="background:linear-gradient(135deg,#d4572a,#8f3417);">AE</div>
+            <h4>Alicia Ellis</h4>
+            <div class="role">Computer Science Notebook Lead</div>
+            <p class="bio">TBD</p>
             <div class="socials">
               <a href="#" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
               <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
@@ -1141,11 +1360,13 @@
     <div class="inner">
 
       <section id="search">
-        <!-- A simple search box. Note: it does not actually
-             filter or search anything on this page by itself,
-             it is a visual placeholder matching the original
-             template design. Wiring it up to actually filter
-             notebooks would require additional JavaScript. -->
+        <!-- This search box is kept in sync with the main search
+             box up in the Notebook Library section (and vice
+             versa), so typing in either one filters the notebook
+             cards. Handy on desktop where this sidebar is visible
+             while you scroll. See "SEARCH AND FILTER LOGIC" near
+             the <script> tag at the end of this file for how the
+             syncing works. -->
         <form onsubmit="return false;">
           <input type="text" name="query" id="query" placeholder="Search notebooks" />
         </form>
@@ -1179,6 +1400,7 @@
               <li><a href="#notebooks">Mechanical Engineering</a></li>
               <li><a href="#notebooks">Chemistry</a></li>
               <li><a href="#notebooks">Materials Science</a></li>
+              <li><a href="#notebooks">Computer Science</a></li>
               <!-- Add a line here for each new field -->
             </ul>
           </li>
@@ -1194,6 +1416,7 @@
           <li><span><span class="field-chip mech"></span> Mechanical Engineering</span><span class="count">4</span></li>
           <li><span><span class="field-chip chem"></span> Chemistry</span><span class="count">4</span></li>
           <li><span><span class="field-chip mat"></span> Materials Science</span><span class="count">4</span></li>
+          <li><span><span class="field-chip comp"></span> Computer Science</span><span class="count">4</span></li>
           <!-- Add a line here for each new field, update counts by hand -->
         </ul>
       </section>
@@ -1202,13 +1425,13 @@
         <header class="major"><h2>Get in touch</h2></header>
         <p>Have a notebook to contribute, or a course that could use one? Reach out and we will help you get it published.</p>
         <ul class="contact">
-          <li><i class="fa-solid fa-envelope"></i><a href="mailto:hello@notebooklab.edu">hello@notebooklab.edu</a></li>
+          <li><i class="fa-solid fa-envelope"></i><a href="mailto:r.padinmonroig@ufl.edu">r.padinmonroig@ufl.edu</a></li>
           <li><i class="fa-brands fa-github"></i><a href="#">github.com/notebooklab</a></li>
         </ul>
       </section>
 
       <footer id="footer">
-        <p class="copyright">Built for students and instructors exploring STEM through code. Layout inspired by Editorial, HTML5 UP.</p>
+        <p class="copyright">Built for students and instructors exploring STEM through code.</p>
       </footer>
 
     </div>
@@ -1220,55 +1443,159 @@
   ============================================================
   JAVASCRIPT (page interactivity)
   ============================================================
-  This is the only functional code on the page, and it powers
-  just one thing: clicking a field filter button (All fields /
-  Mechanical Engineering / Chemistry / Materials Science) up in
-  the Notebook Library section.
+  This script powers three related things in the Notebook
+  Library section: the field filter tabs (All fields /
+  Mechanical Engineering / Chemistry / etc.), the search boxes
+  (the one above the tabs, and the matching one in the sidebar),
+  and the 6 notebook limit with its "See all" links.
 
+  SEARCH AND FILTER LOGIC
+  --------------------------
   In plain terms, this script:
-    1. Finds every filter button (elements with class="field-tab")
-       and every notebook group (elements with
-       class="notebook-group").
-    2. Waits for someone to click a filter button.
-    3. When a button is clicked, it first removes the "active"
-       highlight from every button, then adds "active" to the one
-       just clicked (this is what makes the clicked tab turn
-       orange).
-    4. It then checks that button's data-field="..." value (for
-       example "mech") and compares it against each notebook
-       group's own data-field="..." value. Any group that does
-       not match gets the CSS class "hidden" added to it (which
-       the CSS rule .notebook-group.hidden hides from view), and
-       any group that does match has "hidden" removed so it shows.
-    5. Clicking "All fields" (data-field="all") matches every
-       group, so nothing stays hidden.
+    1. Finds every filter button (class="field-tab"), every
+       notebook group (class="notebook-group"), every individual
+       notebook card (class="notebook-card"), both search inputs
+       (id="notebook-search-input" and id="query"), and the
+       "no results" message (id="notebooks-no-results").
+    2. Defines one function, applyFilters(), that is the single
+       source of truth for what is visible. Every time it runs,
+       it:
+         a. Checks which field tab currently has the "active"
+            class, to know the selected field (or "all").
+         b. Checks the current text typed into the search box
+            (lowercased, so searching is not case sensitive).
+         c. Goes through every notebook card and combines both
+            checks: a card stays visible only if its group's
+            field matches the selected tab AND the card's title,
+            description, and tools text contain the typed search
+            text (an empty search box matches everything).
+         d. ENFORCE THE 6 NOTEBOOK LIMIT: when the search box is
+            empty, only the first 6 cards that pass the field
+            check in each group are allowed to show, any beyond
+            the 6th are hidden here on the homepage no matter
+            what. When the search box has text in it, this limit
+            is skipped entirely, so every matching card can show,
+            since hiding a relevant search result behind a
+            6-card cap would defeat the point of searching.
+         e. Hides (display: none) any card that fails the checks
+            above, and shows the rest.
+         f. If an entire field group ends up with zero visible
+            cards, the whole group (including its heading) is
+            hidden too, so you do not see an empty "Chemistry"
+            heading with nothing underneath it.
+         g. Shows that group's "See all" link (class
+            "see-all-link", search this file for "SEE ALL LINK")
+            only when the search box is empty AND that field has
+            more than 6 cards in total, meaning some are actually
+            hidden by the limit. The link stays hidden while
+            searching, or whenever a field has 6 or fewer
+            notebooks (nothing to "see all" of).
+         h. If literally no cards anywhere are visible, the
+            "no-results" message is shown; otherwise it stays
+            hidden.
+    3. Clicking a field tab swaps which button has the "active"
+       class, then calls applyFilters().
+    4. Typing in either search box copies that box's value into
+       the other one (so they always show the same text) and
+       calls applyFilters(). This uses the "input" event, which
+       fires on every keystroke, so results update live as you
+       type, with no need to press Enter or a search button.
 
   You do not need to edit this script to add notebooks, fields,
   team members, or new sections, those are all done by editing
   the HTML further up, as explained in the comments throughout
-  this file. This script will keep working automatically as long
-  as new field groups and filter buttons use matching
-  data-field="..." values (see "ADD A NOTEBOOK FIELD" above).
+  this file. This script keeps working automatically as long as
+  new field groups and filter buttons use matching
+  data-field="..." values (see "ADD A NOTEBOOK FIELD" above), and
+  as long as each notebook card keeps its <h4> title and
+  description <p> (the script reads the text straight out of the
+  card, it does not need separate tags added for searching).
   ============================================================
 -->
 <script>
   (function() {
+    var VISIBLE_LIMIT = 6;
     var tabs = document.querySelectorAll('.field-tab');
     var groups = document.querySelectorAll('.notebook-group');
+    var mainSearchInput = document.getElementById('notebook-search-input');
+    var sidebarSearchInput = document.getElementById('query');
+    var noResultsMessage = document.getElementById('notebooks-no-results');
+
+    function getActiveField() {
+      var activeTab = document.querySelector('.field-tab.active');
+      return activeTab ? activeTab.getAttribute('data-field') : 'all';
+    }
+
+    function applyFilters() {
+      var activeField = getActiveField();
+      var searchTerm = (mainSearchInput ? mainSearchInput.value : '').trim().toLowerCase();
+      var isSearching = searchTerm !== '';
+      var anyCardVisibleOnPage = false;
+
+      groups.forEach(function(group) {
+        var groupField = group.getAttribute('data-field');
+        var fieldMatches = (activeField === 'all' || groupField === activeField);
+        var cards = group.querySelectorAll('.notebook-card');
+        var seeAllLink = group.querySelector('.see-all-link');
+        var anyCardVisibleInGroup = false;
+        var matchingCount = 0;
+
+        cards.forEach(function(card) {
+          var cardText = card.textContent.toLowerCase();
+          var searchMatches = (searchTerm === '' || cardText.indexOf(searchTerm) !== -1);
+          var passesChecks = fieldMatches && searchMatches;
+          var visible = false;
+
+          if (passesChecks) {
+            matchingCount += 1;
+            // Only the first VISIBLE_LIMIT matching cards show
+            // when not searching, the limit is skipped while
+            // searching so every match can be seen.
+            visible = isSearching || matchingCount <= VISIBLE_LIMIT;
+          }
+
+          card.style.display = visible ? '' : 'none';
+          if (visible) {
+            anyCardVisibleInGroup = true;
+            anyCardVisibleOnPage = true;
+          }
+        });
+
+        group.classList.toggle('hidden', !anyCardVisibleInGroup);
+
+        if (seeAllLink) {
+          var showSeeAll = fieldMatches && !isSearching && matchingCount > VISIBLE_LIMIT;
+          seeAllLink.classList.toggle('visible', showSeeAll);
+        }
+      });
+
+      if (noResultsMessage) {
+        noResultsMessage.classList.toggle('visible', !anyCardVisibleOnPage);
+      }
+    }
+
     tabs.forEach(function(tab) {
       tab.addEventListener('click', function() {
         tabs.forEach(function(t) { t.classList.remove('active'); });
         tab.classList.add('active');
-        var field = tab.getAttribute('data-field');
-        groups.forEach(function(g) {
-          if (field === 'all' || g.getAttribute('data-field') === field) {
-            g.classList.remove('hidden');
-          } else {
-            g.classList.add('hidden');
-          }
-        });
+        applyFilters();
       });
     });
+
+    if (mainSearchInput) {
+      mainSearchInput.addEventListener('input', function() {
+        if (sidebarSearchInput) { sidebarSearchInput.value = mainSearchInput.value; }
+        applyFilters();
+      });
+    }
+    if (sidebarSearchInput) {
+      sidebarSearchInput.addEventListener('input', function() {
+        if (mainSearchInput) { mainSearchInput.value = sidebarSearchInput.value; }
+        applyFilters();
+      });
+    }
+
+    applyFilters();
   })();
 </script>
 
