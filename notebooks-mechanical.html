@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Mechanical Engineering Notebooks - Jupyter Notebooks for STEM Education</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!--
+  ============================================================
+  THIS IS A "SEE ALL" PAGE FOR ONE FIELD
+  ============================================================
+  This page exists because the homepage (index.html) only ever
+  shows the first 6 notebook cards for each field, and links to
+  a dedicated page like this one for the rest. This file lists
+  every Mechanical Engineering notebook, with no 6-card limit.
+
+  It reuses the same CSS class names as index.html (.notebook-
+  card, .nb-tag, and so on) so notebooks look identical here and
+  on the homepage, but it has its own smaller, self-contained
+  copy of just the styles this simpler page actually needs (no
+  sidebar, banner, or team section here), plus the same Google
+  Fonts and Font Awesome icon links loaded above.
+
+  ADD A NOTEBOOK TO THIS PAGE
+  ------------------------------
+  Copy one whole <div class="notebook-card">...</div> block
+  below (inside .notebook-grid) and edit:
+    - the nb-tag level text (Intro / Intermediate / Advanced)
+    - the <h4> title
+    - the description paragraph
+    - the tools/libraries text in the footer
+    - the href="#" link, point it at the real notebook
+  If this notebook should also appear on the homepage (it will,
+  as long as the homepage's Mechanical Engineering group has fewer than 6
+  cards already), add the same notebook-card block to index.html
+  too, inside the matching notebook-group. See "ADD A NOTEBOOK"
+  in index.html for the same instructions in more detail.
+
+  KEEPING THIS IN SYNC WITH index.html
+  ---------------------------------------
+  The homepage and this page are separate files and do not
+  update each other automatically. A simple way to stay in sync:
+  whenever you add a new Mechanical Engineering notebook, always add it
+  here first (this page is the complete, canonical list for the
+  field), then also copy it into index.html's Mechanical Engineering group
+  only if you want it to be one of the first 6 shown there.
+  ============================================================
+-->
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f4f4f6;
+    --text: #3a3d44;
+    --heading: #23262d;
+    --accent: #d4572a;
+    --accent-dark: #b8461f;
+    --card-bg: #ffffff;
+    --card-border: #e7e7ea;
+    --chip-mech: #3b6ea5;
+    --chip-chem: #4e8f5e;
+    --chip-mat: #ba1212;
+    --chip-comp: #9b5bb0;
+    --font-head: 'Roboto Slab', serif;
+    --font-body: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1b1c20;
+      --bg-alt: #232429;
+      --text: #d4d6db;
+      --heading: #f2f3f5;
+      --card-bg: #232429;
+      --card-border: #34363d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1b1c20;
+    --bg-alt: #232429;
+    --text: #d4d6db;
+    --heading: #f2f3f5;
+    --card-bg: #232429;
+    --card-border: #34363d;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  h1, h2, h3, h4 { font-family: var(--font-head); color: var(--heading); line-height: 1.25; margin: 0 0 0.5em; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 0 0 1em; }
+  .wrapper { max-width: 1000px; margin: 0 auto; padding: 2.5em 2em 4em; }
+  header#header {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1em;
+    padding-bottom: 1.5em; margin-bottom: 1.5em;
+    border-bottom: 2px solid var(--card-border);
+  }
+  header#header .logo { font-family: var(--font-head); font-size: 1.3em; color: var(--heading); }
+  header#header .logo strong { color: var(--accent); }
+  header#header .logo:hover { text-decoration: none; }
+  .back-link { font-weight: 600; font-size: 0.95em; display: inline-flex; align-items: center; gap: 0.4em; }
+  .page-header { margin-bottom: 2em; }
+  .page-header p.sub { color: var(--text); font-size: 1.02em; max-width: 700px; }
+  .field-chip { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 0.4em; }
+  .field-chip.mech { background: var(--chip-mech); }
+  .field-chip.chem { background: var(--chip-chem); }
+  .field-chip.mat { background: var(--chip-mat); }
+  .field-chip.comp { background: var(--chip-comp); }
+  .notebook-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.3em;
+  }
+  .notebook-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.3em;
+    display: flex; flex-direction: column; gap: 0.6em;
+  }
+  .notebook-card .tag-row { display: flex; gap: 0.4em; flex-wrap: wrap; }
+  .nb-tag {
+    font-size: 0.72em; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+    padding: 0.2em 0.6em; border-radius: 4px; color: #fff;
+  }
+  .nb-tag.mech { background: var(--chip-mech); }
+  .nb-tag.chem { background: var(--chip-chem); }
+  .nb-tag.mat { background: var(--chip-mat); }
+  .nb-tag.comp { background: var(--chip-comp); }
+  .nb-tag.level { background: var(--bg-alt); color: var(--text); border: 1px solid var(--card-border); }
+  .notebook-card h4 { font-size: 1.05em; margin: 0; }
+  .notebook-card p { font-size: 0.9em; margin: 0; flex: 1; }
+  .notebook-card .nb-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.85em; padding-top: 0.6em; border-top: 1px solid var(--card-border);
+  }
+  .notebook-card .nb-footer a { font-weight: 600; }
+  footer#footer { border-top: 1px solid var(--card-border); margin-top: 3em; padding-top: 1.5em; }
+  footer#footer p.copyright { font-size: 0.85em; color: var(--text); }
+  @media (max-width: 700px) {
+    .wrapper { padding: 1.6em 1.2em 3em; }
+  }
+  .notebook-search {
+    position: relative;
+    max-width: 420px;
+    margin-bottom: 1.4em;
+  }
+  .notebook-search input {
+    width: 100%;
+    padding: 0.65em 1em 0.65em 2.4em;
+    border-radius: 6px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95em;
+  }
+  .notebook-search input:focus { outline: none; border-color: var(--accent); }
+  .notebook-search i {
+    position: absolute; left: 0.9em; top: 50%; transform: translateY(-50%);
+    color: var(--text); opacity: 0.55; font-size: 0.9em; pointer-events: none;
+  }
+  .no-results {
+    display: none;
+    padding: 1.4em;
+    border: 1px dashed var(--card-border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.92em;
+  }
+  .no-results.visible { display: block; }
+
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <header id="header">
+    <a href="index.html#top" class="logo"><strong>Jupyter Notebooks </strong> AI/ML and STEM Learning</a>
+    <a href="index.html#notebooks" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to notebook library</a>
+  </header>
+
+  <div class="page-header">
+    <h1><span class="field-chip mech"></span>Mechanical Engineering Notebooks</h1>
+    <p class="sub">Every mechanical engineering notebook in the library, in one place. Search below to filter the list.</p>
+  </div>
+
+  <!--
+    SEARCH BOX
+    -----------
+    Filters the notebook cards below as you type, matching each
+    card's title, description, and tools/libraries text. This is
+    a simpler, single-field version of the same search feature on
+    the homepage (index.html), see "SEARCH AND FILTER LOGIC" near
+    the <script> tag at the end of this file for how it works.
+  -->
+  <div class="notebook-search">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="notebook-search-input" placeholder="Search mechanical engineering notebooks by title, topic, or tool..." aria-label="Search mechanical engineering notebooks">
+  </div>
+
+  <!-- Shown automatically when the search box matches zero cards. -->
+  <p class="no-results" id="notebooks-no-results">No notebooks match your search. Try a different word, or clear the search box to see all mechanical engineering notebooks again.</p>
+
+  <!-- Each .notebook-card below is one notebook. Copy/paste one to add another, see "ADD A NOTEBOOK TO THIS PAGE" above. -->
+  <div class="notebook-grid" id="notebook-grid">
+    <div class="notebook-card">
+      <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intro</span></div>
+      <h4>Materials Testing</h4>
+      <p>Plots stress strain curves for common alloys and lets students find yield point and ultimate strength from synthetic data.</p>
+      <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+    </div>
+    <div class="notebook-card">
+      <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intermediate</span></div>
+      <h4>Mechanical Testing : Hardness </h4>
+      <p>introduction to standard hardness testing methods. Image analysis of indentations to identify test method and calculate hardness using both computer vision and convolutional neural networks. </p>
+      <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+    </div>
+    <div class="notebook-card">
+      <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Advanced</span></div>
+      <h4>Fractography and Fractals</h4>
+      <p>Introduction to fractography and fractal dimension.Training and testing of convolutional naural network using 2D height maps.</p>
+      <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+    </div>
+    <div class="notebook-card">
+      <div class="tag-row"><span class="nb-tag mech">Mechanical</span><span class="nb-tag level">Intro</span></div>
+      <h4>Corrosion</h4>
+      <p>TBD.</p>
+      <div class="nb-footer"><span>TBD</span><a href="#">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+    </div>
+  </div>
+
+  <footer id="footer">
+    <p class="copyright">Built for students and instructors exploring STEM through code. <a href="index.html#notebooks">Back to the full notebook library</a>.</p>
+  </footer>
+
+</div>
+
+<!--
+  ============================================================
+  JAVASCRIPT (page interactivity)
+  ============================================================
+  SEARCH AND FILTER LOGIC
+  --------------------------
+  This page has only one job: filter the notebook cards below as
+  the search box is typed into. In plain terms, this script:
+    1. Finds every notebook card (class="notebook-card"), the
+       search input (id="notebook-search-input"), and the
+       "no results" message (id="notebooks-no-results").
+    2. Listens for the "input" event on the search box, which
+       fires on every keystroke, so results update live with no
+       need to press Enter.
+    3. On every keystroke, it lowercases the typed text (so
+       searching is not case sensitive) and checks each card's
+       full text (title, description, tools) for a match. Cards
+       that do not contain the typed text are hidden
+       (display: none); the rest stay visible.
+    4. If the search matches zero cards, the "no-results" message
+       is shown; otherwise it stays hidden.
+  There is no 6-card limit or field filtering here, unlike the
+  homepage, since this page already shows only one field with no
+  cap. You do not need to edit this script when adding notebooks,
+  just add new .notebook-card blocks as described in "ADD A
+  NOTEBOOK TO THIS PAGE" above, the search will pick them up
+  automatically.
+  ============================================================
+-->
+<script>
+  (function() {
+    var searchInput = document.getElementById('notebook-search-input');
+    var cards = document.querySelectorAll('.notebook-card');
+    var noResultsMessage = document.getElementById('notebooks-no-results');
+
+    function applyFilter() {
+      var searchTerm = (searchInput ? searchInput.value : '').trim().toLowerCase();
+      var anyVisible = false;
+
+      cards.forEach(function(card) {
+        var cardText = card.textContent.toLowerCase();
+        var visible = (searchTerm === '' || cardText.indexOf(searchTerm) !== -1);
+        card.style.display = visible ? '' : 'none';
+        if (visible) { anyVisible = true; }
+      });
+
+      if (noResultsMessage) {
+        noResultsMessage.classList.toggle('visible', !anyVisible);
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', applyFilter);
+    }
+  })();
+</script>
+
+</body>
+</html>
